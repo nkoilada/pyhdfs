@@ -2,13 +2,13 @@
 
 ## Description
 
-**PyHDFS** is python interface to Apache Hadoop Distributed File System.
-This module used the WebHDFS REST API of Hadoop.
+**PyHDFS** is python interface to Apache Hadoop Distributed File System.  
+It uses WebHDFS REST API of Hadoop.
  
 ## Prerequisites
 
 WebHDFS must to enabled for PyHDFS to work. 
-To enable WebHDFS set dfs.webhdfs.enabled property to true in hdfs-site.xml 
+To enable WebHDFS set **dfs.webhdfs.enabled** property in **hdfs-site.xml**
 
 	<property>
 		<name>dfs.webhdfs.enabled</name>
@@ -29,5 +29,5 @@ PyHDFS comes with GNU LGPL v2.1. For complete terms see "LICENSE.txt"
 
 ## Author
 
-Name: Nagendra Koilada
+Name: Nagendra Koilada  
 Email: nkoilada@uci.edu
