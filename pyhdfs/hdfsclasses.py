@@ -20,46 +20,34 @@ import httplib2
 import json
 
 class HDFSContentSummary():
-
+	pass
 	def __init__(self, obj):
-		self.directoryCount = obj["directoryCount"]
-		self.fileCount = obj["fileCount"]
-		self.length = obj["length"]
-		self.quota = obj["quota"]
-		self.spaceConsumed = obj["spaceConsumed"]
-		self.spaceQuota = obj["spaceQuota"]
+		for k,v in obj.iteritems():
+			setattr(self, k, v)
 
 class HDFSFileChecksum():
-	
+	pass
 	def __init__(self, obj):
-		self.algorithm = obj["algorithm"]
-		self.bytes = obj["bytes"]
-		self.length = obj["length"]
+		for k,v in obj.iteritems():
+			setattr(self, k, v)
 
 class HDFSFileStatus():
-	
+	pass
 	def __init__(self, obj):
-		self.accessTime = obj["accessTime"]
-		self.blockSize = obj["blockSize"]
-		self.group = obj["group"]
-		self.length = obj["length"]
-		self.modificationTime = obj["modificationTime"]
-		self.owner = obj["owner"]
-		self.permission = obj["permission"]
-		self.replication = obj["replication"]
-		self.type = obj["type"]
-		self.path = obj["pathSuffix"]
+		for k,v in obj.iteritems():
+			if k == "type":
+				setattr(self, "fileType", v)
+			else:
+				setattr(self, k, v)
 
 class HDFSRemoteException(Exception):
-	
 	def __init__(self, obj):
-		Exception.__init__(self, obj["message"])
-		self.exceptionType = obj["exception"]
-		self.javaClassName = obj["javaClassName"]
+		Exception.__init__(self, obj["RemoteException"]["message"])
+		self.exceptionType = obj["RemoteException"]["exception"]
+		self.javaClassName = obj["RemoteException"]["javaClassName"]
 
 class HDFSConnection:
 	httpconn = httplib2.Http()
-
 	def request(self, url, method="GET", body=None, headers=None):
 		header, resp = self.httpconn.request(url, method, body, headers)
 		
@@ -102,11 +90,7 @@ class HDFSConnection:
 			 header["status"] == "403" or \
 			 header["status"] == "404" or \
 			 header["status"] == "500":
-
-			response = json.loads(resp)
-			e = response["RemoteException"]
-			raise HDFSRemoteException(e)
+			raise HDFSRemoteException(json.loads(resp))
 		else:
 			print header, resp
-			raise HDFSException()
-
+			raise HDFSRemoteException()

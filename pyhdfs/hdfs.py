@@ -17,47 +17,50 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 import urllib
-from hdfsclasses import *
+from pyhdfs.hdfsclasses import *
 
 NO_SECURITY = 1
 KERBOROS_SPNEGO = 2
 DELEGATION_TOKEN = 3
 
-hdfs_config = {"hostname" : "localhost",
+_hdfs_config = {"hostname" : "localhost",
 			   "namenode_port" : "50070",
 			   "user" : "webuser"}
 
-auth_params = {"user.name" : hdfs_config["user"]}
+_auth_params = {"user.name" : _hdfs_config["user"]}
 
 conn = HDFSConnection()
 
 def paramsToURL(path, request_params):
-	url = "http://" + hdfs_config["hostname"] + \
-		  ":" + hdfs_config["namenode_port"] + \
+	url = "http://" + _hdfs_config["hostname"] + \
+		  ":" + _hdfs_config["namenode_port"] + \
 		  "/webhdfs/v1" + path + "?"
 
-	for k,v in auth_params.items() + request_params.items():
+	for k,v in _auth_params.items() + request_params.items():
 		if v is not None:
 			url = url + k + "=" + v + "&"
 	return url.rstrip("&")
 
-def HDFSConfig(hostname, port, username):
-	global hdfs_config
-	hdfs_config["hostname"] = hostname
-	hdfs_config["namenode_port"] = port	
-	hdfs_config["user"] = username
-	global auth_params
-	auth_params["user.name"] = username
+def getConfig():
+	return _hdfs_config
+
+def setConfig(hostname="localhost", port="50070", username="webuser"):
+	global _hdfs_config
+	_hdfs_config["hostname"] = hostname
+	_hdfs_config["namenode_port"] = port	
+	_hdfs_config["user"] = username
+	global _auth_params
+	_auth_params["user.name"] = username
 
 def getAuthorization(auth_type):
-	global auth_params
-	auth_params = {}
+	global _auth_params
+	_auth_params = {}
 	if auth_type is KERBOROS_SPNEGO:
 		pass
 	elif auth_type is DELEGATION_TOKEN:
-		auth_params["delegation"] = value
+		_auth_params["delegation"] = value
 	else:
-		auth_params["user.name"] = hdfs_config["user"]
+		_auth_params["user.name"] = _hdfs_config["user"]
 
 def makeDirectory(path, perms=None):
 	request_params = {"op" : "MKDIRS",
@@ -105,7 +108,7 @@ def listDirectory(path):
 	url = paramsToURL(path, request_params)
 	resp = conn.request(url, "GET")
 	for i in resp:
-		i.path = path + "/" + i.path
+		setattr(i,"path", path.rstrip("/") + "/" + i.pathSuffix)
 	return resp
 
 def getContentSummary(path):
@@ -144,7 +147,7 @@ def getHomeDirectory():
 
 def getDelegationToken():
 	request_params = {"op" : "GETDELEGATIONTOKEN",
-					  "renewer" : hdfs_config["user"]}
+					  "renewer" : _hdfs_config["user"]}
 	url = paramsToURL("", request_params)
 	resp = conn.request(url, "GET")
 	return resp
