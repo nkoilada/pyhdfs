@@ -2,7 +2,7 @@
 
 ## Description
 
-**PyHDFS** is python interface to Apache Hadoop Distributed File System.  
+**PyHDFS** is python interface to Apache Hadoop Distributed File System to perform file operations like read, write, set permissions etc.  
 It uses WebHDFS REST API of Hadoop.
  
 ## Prerequisites
