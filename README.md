@@ -26,7 +26,7 @@ To enable WebHDFS set **dfs.webhdfs.enabled** property in **hdfs-site.xml**
 	... print hdfs.getConfig()
 	{'namenode_port': '50070', 'hostname': 'localhost', 'user': 'webuser'}
 	>>> 
-	>>> # Set username is config
+	>>> # Set username in config
 	... hdfs.setConfig(username = "nkoilada")
 	>>> print hdfs.getConfig()
 	{'namenode_port': '50070', 'hostname': 'localhost', 'user': 'nkoilada'}
